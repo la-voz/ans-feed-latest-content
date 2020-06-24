@@ -13,13 +13,26 @@ const params = {
  */
 const pattern = (key = {}) => {
   const website = key["arc-site"] || "Arc Site is not defined.";
-  const { feedSize, feedPage = 1 } = key;
-
+  const { feedSize, feedPage = 1, excluded = '' } = key;
   const searchPath = "/content/v4/search/published";
+
+  let body = {
+    query: {
+      bool: {
+        must_not: []
+      }
+    }
+  };
+  body.query.bool.must_not.push({
+    ids: {
+      values: [`default_true_${excluded}`]
+    }
+  });
 
   const query = [
     `q=`,
     `website=${website}`,
+    `body=${encodeURI(JSON.stringify(body))}`,
     `size=${feedSize}`,
     `from=${(feedPage - 1) * feedSize}`
   ].join("&");
