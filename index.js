@@ -13,13 +13,21 @@ const params = {
  */
 const pattern = (key = {}) => {
   const website = key["arc-site"] || "Arc Site is not defined.";
-  const { feedSize, feedPage = 1, excluded = '' } = key;
+  const { feedSize, feedPage = 1, excluded = "" } = key;
   const searchPath = "/content/v4/search/published";
+  const allowedTypes = ["story", "video", "gallery"];
 
-  let body = {
+  const body = {
     query: {
       bool: {
-        must_not: []
+        must_not: [],
+        should: allowedTypes.map(item => {
+          return {
+            term: {
+              type: item
+            }
+          };
+        })
       }
     }
   };
@@ -57,3 +65,4 @@ const source = {
 };
 
 export default source;
+
