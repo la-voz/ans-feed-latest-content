@@ -13,9 +13,22 @@ const params = {
  */
 const pattern = (key = {}) => {
   const website = key["arc-site"] || "Arc Site is not defined.";
-  const { feedSize, feedPage = 1, excluded = "" } = key;
+  const {
+    feedSize,
+    feedPage = 1,
+    excluded = "",
+    maxPage = 1000,
+    pageRegex = "\\/\\d+\\/?$"
+  } = key;
   const searchPath = "/content/v4/search/published";
   const allowedTypes = ["story", "video", "gallery"];
+
+  if (feedPage > maxPage) {
+    const err = new Error();
+    err.statusCode = 301;
+    err.location = key.uri.replace(new RegExp(pageRegex), "/");
+    throw err;
+  }
 
   const body = {
     query: {
